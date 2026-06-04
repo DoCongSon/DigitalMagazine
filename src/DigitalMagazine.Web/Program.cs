@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Piranha;
 using Piranha.AspNetCore.Identity.SQLServer;
 using Piranha.AttributeBuilder;
@@ -58,6 +58,9 @@ app.UseStaticFiles();
 app.UsePiranha(options =>
 {
     App.Init(options.Api);
+    
+    // Inject Custom CSS for Manager (Offline Gravatar fix)
+    App.Modules.Get<Piranha.Manager.Module>().Styles.Add("~/assets/css/manager-custom.css");
     
     // Đăng ký toàn bộ Models từ DigitalMagazine.CMS
     new ContentTypeBuilder(options.Api)

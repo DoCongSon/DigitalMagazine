@@ -1,85 +1,98 @@
-﻿# DigitalMagazine - Hệ Thống Quản Trị Nội Dung Đa Lớp
+# DigitalMagazine (Tạp Chí Số) - Hệ Thống Quản Trị Nội Dung Đa Lớp
 
-**DigitalMagazine** là một hệ thống quản trị nội dung (CMS) mạnh mẽ được xây dựng dựa trên nền tảng **Piranha CMS** và được thiết kế theo chuẩn **Kiến Trúc 4 Lớp (Clean Architecture)**. Hệ thống được tối ưu hóa cho việc phát triển các trang tin tức, blog với hiệu suất cao, khả năng bảo trì tốt và dễ dàng mở rộng.
-
----
-
-## 🛠 Công Nghệ Sử Dụng
-
-- **Framework:** .NET 8.0 (ASP.NET Core MVC)
-- **Core CMS:** Piranha CMS v12.0
-- **Database ORM:** Entity Framework Core 8.0
-- **Database Engine:** Microsoft SQL Server (Hỗ trợ LocalDB cho phát triển)
-- **Identity:** ASP.NET Core Identity tích hợp sẵn của Piranha.
-- **Frontend Admin:** Vue.js, Bootstrap 4 (Tích hợp trong Piranha Manager)
+**DigitalMagazine** là một hệ thống quản trị nội dung (CMS) mạnh mẽ được xây dựng dựa trên nền tảng **Piranha CMS** và được thiết kế theo chuẩn **Kiến Trúc 4 Lớp (Clean Architecture)**. Hệ thống được tối ưu hóa cho việc phát triển các trang tin tức, tạp chí điện tử với hiệu suất cao, khả năng bảo trì tốt và dễ dàng mở rộng.
 
 ---
 
-## 📂 Cấu Trúc Dự Án (Clean Architecture)
+## 🏗 1. Kiến Trúc Hệ Thống (System Architecture)
 
-Dự án được chia làm 4 layer độc lập nằm trong thư mục `src/`, đảm bảo tính đóng gói và không phụ thuộc chéo:
+Hệ thống được thiết kế theo mô hình **Clean Architecture (Kiến trúc Sạch)** nhằm tách biệt hoàn toàn giữa Core Nghiệp Vụ, Logic Xử Lý, Tương Tác Dữ Liệu và Giao Diện Người Dùng.
 
+Sơ đồ 4 lớp của hệ thống:
 1. **`DigitalMagazine.CMS` (Tầng Domain/Core CMS):**
-   Chứa các cấu trúc định nghĩa cốt lõi nhất như `PageTypes`, `PostTypes` của Piranha CMS (Ví dụ: `StandardPage`, `StandardArchive`, `StandardPost`). Tầng này không phụ thuộc vào bất kỳ tầng nào khác.
+   - Chứa các định nghĩa cốt lõi của bài viết: `PageTypes`, `PostTypes` (Ví dụ: `StandardPage`, `StandardArchive`, `StandardPost`).
+   - Tầng này hoàn toàn độc lập, không phụ thuộc vào tầng nào khác.
 
 2. **`DigitalMagazine.Application` (Tầng Ứng Dụng):**
-   Chứa các Interface quy định các hợp đồng xử lý nghiệp vụ (Ví dụ: `IHomePageService`, `IAnalyticsService`) và các đối tượng dữ liệu truyền tải (DTOs).
+   - Định nghĩa các "Hợp đồng" (Interface) quy định các nghiệp vụ như `IHomePageService`, `IAnalyticsService`.
+   - Chứa các đối tượng truyền tải dữ liệu `DTOs` (Data Transfer Objects). Không chứa code giao tiếp Database.
 
 3. **`DigitalMagazine.Infrastructure` (Tầng Hạ Tầng):**
-   Triển khai thực tế các Interface từ tầng Application. Phụ trách giao tiếp với Cơ sở dữ liệu thông qua Entity Framework Core (chứa `AppDbContext`, Repositories, Services) và gọi các API của Piranha để lấy dữ liệu CMS.
+   - Nơi kết nối trực tiếp với Cơ Sở Dữ Liệu thông qua Entity Framework Core.
+   - Chứa `AppDbContext`, các `Repositories`, và triển khai (Implement) các Interface từ tầng Application.
+   - Chịu trách nhiệm gọi API của Piranha CMS để lấy/lưu dữ liệu bài viết.
 
-4. **`DigitalMagazine.Web` (Tầng Giao Diện/Entry Point):**
-   Dự án ASP.NET Core MVC (Frontend & Backend). Nơi cấu hình `Program.cs`, khai báo Dependency Injection, kết nối Database, cấu hình Middleware của Piranha và chứa các HTML Views (Views/Controllers/Areas).
-
----
-
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Dự Án
-
-### Yêu Cầu Hệ Thống
-
-- Đã cài đặt [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-- SQL Server (Hoặc SQL Server Express / LocalDB `(localdb)\mssqllocaldb`).
-
-### Bước 1: Cấu hình Connection String
-
-Mở file `src/DigitalMagazine.Web/appsettings.json` và kiểm tra lại chuỗi kết nối Database. Mặc định dự án sử dụng `LocalDB`:
-
-```json
-"ConnectionStrings": {
-  "piranha": "Server=(localdb)\\mssqllocaldb;Database=DigitalMagazine;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
-}
-```
-
-### Bước 2: Cập Nhật Database (Migrations)
-
-Dự án sử dụng cơ chế EF Core Migrations song song (Một cho Identity của Piranha, một cho Custom DB của ứng dụng). Chạy lần lượt các lệnh sau tại thư mục gốc:
-
-```bash
-# Di chuyển vào thư mục Web
-cd src/DigitalMagazine.Web
-
-# Seed dữ liệu Identity của Piranha
-dotnet run --seed
-```
-
-_Lưu ý: Quá trình khởi động `dotnet run` đã được tích hợp sẵn lệnh `db.Database.Migrate()` cho `AppDbContext` tự động chạy._
-
-### Bước 3: Chạy Ứng Dụng
-
-Trong thư mục `src/DigitalMagazine.Web`, chạy lệnh:
-
-```bash
-dotnet run
-```
-
-Sau khi ứng dụng chạy:
-
-- 🌍 **Trang Khách (Frontend):** `http://localhost:5000/`
-- ⚙️ **Trang Quản Trị (Backend):** `http://localhost:5000/manager`
-- 🔑 **Tài khoản mặc định:**
-  - Username: `admin`
-  - Password: `password`
+4. **`DigitalMagazine.Web` (Tầng Giao Diện / Presentation):**
+   - Dự án Web ASP.NET Core MVC. Chứa giao diện người dùng (Frontend) và giao diện Quản trị Manager (Backend).
+   - Nơi cấu hình Dependency Injection (DI), Middleware, và nạp các thành phần hệ thống (`Program.cs`).
 
 ---
 
-_Developed with Clean Architecture standards._
+## 💻 2. Yêu Cầu Triển Khai (Deployment Requirements)
+
+Để vận hành hệ thống một cách mượt mà và ổn định, môi trường Server cần đáp ứng các tiêu chuẩn sau:
+
+### Nền tảng & Môi trường (Platform & Environment)
+- **Hệ điều hành:** Hỗ trợ đa nền tảng. Khuyên dùng **Windows Server (2019/2022)** hoặc **Linux (Ubuntu 20.04/22.04 LTS, Debian)**.
+- **Web Server:** IIS (trên Windows) hoặc Nginx / Apache (trên Linux chạy dạng Reverse Proxy). Hỗ trợ chạy Native trên Docker.
+- **Môi trường Runtime:** Bắt buộc cài đặt **.NET 8.0 ASP.NET Core Runtime**.
+
+### Cơ Sở Dữ Liệu (Database Engine)
+- **Chính thức (Production):** **Microsoft SQL Server 2017 trở lên** (Khuyên dùng SQL Server 2022). Hệ thống cũng hỗ trợ chuyển đổi sang PostgreSQL/MySQL nếu cần (Yêu cầu thay thư viện EF Core Provider).
+- **Phát triển (Development):** SQL Server Express hoặc LocalDB `(localdb)\mssqllocaldb`.
+
+### Phần Cứng (Hardware Requirements)
+*(Dành cho hệ thống tạp chí quy mô vừa - 10,000 đến 50,000 lượt truy cập/ngày)*
+- **CPU:** Tối thiểu 2 Cores (Khuyên dùng 4 Cores).
+- **RAM:** Tối thiểu 4GB (Khuyên dùng 8GB trở lên để tối ưu Memory Cache cho Piranha CMS).
+- **Ổ cứng (Storage):** Tối thiểu 50GB SSD. Tốc độ đọc ghi (IOPS) cao để tối ưu Database và Load hình ảnh bài viết.
+- **Network:** Tối thiểu 100Mbps băng thông.
+
+---
+
+## ⚙️ 3. Hướng Dẫn Cài Đặt & Setup (Deployment Guide)
+
+### Môi trường Local (Dành cho Lập Trình Viên)
+1. **Clone dự án & Mở bằng IDE:** Mở file `DigitalMagazine.sln` bằng Visual Studio 2022 hoặc JetBrains Rider.
+2. **Cấu hình Database:** Mở file `src/DigitalMagazine.Web/appsettings.Development.json` và kiểm tra lại chuỗi kết nối (Mặc định dùng LocalDB).
+3. **Chạy ứng dụng:**
+   Nhấn F5 trong IDE hoặc mở Terminal tại thư mục `src/DigitalMagazine.Web` gõ lệnh:
+   ```bash
+   dotnet run --seed
+   ```
+   *Lệnh này sẽ tự động Migrate cơ sở dữ liệu và tạo tài khoản Admin mặc định.*
+
+### Môi trường Server Thực Tế (Production - Windows/IIS)
+1. **Publish Code:**
+   Mở terminal tại thư mục gốc và chạy lệnh đóng gói dự án:
+   ```bash
+   dotnet publish src/DigitalMagazine.Web/DigitalMagazine.Web.csproj -c Release -o ./publish
+   ```
+2. **Cấu hình Server:**
+   - Cài đặt `.NET 8.0 Hosting Bundle` lên Windows Server.
+   - Mở IIS, tạo một Website mới và trỏ thư mục vật lý vào thư mục `./publish` vừa tạo.
+3. **Cấu hình appsettings.json:**
+   - Cập nhật lại chuỗi kết nối trong `appsettings.json` thành IP và thông tin đăng nhập của SQL Server thực tế.
+   - Sửa `"LogLevel"` thành `"Warning"` để giảm dung lượng file Log.
+4. **Bảo mật:**
+   - Cấp quyền Read/Write cho tài khoản `IIS_IUSRS` vào thư mục `wwwroot/uploads` để CMS có thể upload hình ảnh.
+   - Mua và cài đặt chứng chỉ SSL (HTTPS) cho Tên miền.
+
+---
+
+## 🔧 4. Công Nghệ & Thư Viện Sử Dụng (Tech Stack)
+
+- **Cốt lõi:** .NET 8.0, C# 12.
+- **Quản lý Nội dung:** Piranha CMS v12.0 (Giao diện Admin viết bằng Vue.js, Bootstrap 4).
+- **Truy xuất dữ liệu:** Entity Framework Core 8.0, LINQ.
+- **Bảo mật & Định danh:** ASP.NET Core Identity.
+- **Giao diện Frontend (Khách hàng):** ASP.NET MVC Razor Pages (HTML5, CSS3, ES6).
+
+---
+
+## 📚 5. Tài Liệu Mở Rộng
+
+Các tài liệu hướng dẫn chuyên sâu dành cho đội ngũ phát triển nằm tại thư mục `docs/`:
+- [Tổng quan về cấu trúc kiến trúc](docs/TEMPLATE_DESCRIPTION.md)
+- [Hướng dẫn phát triển và mở rộng DigitalMagazine](docs/DEVELOPMENT_GUIDE.md)
+- [Hướng dẫn thêm Module Tính năng mới (Kèm Code Mẫu)](docs/HOWTO_ADD_NEW_MODULE.md)
