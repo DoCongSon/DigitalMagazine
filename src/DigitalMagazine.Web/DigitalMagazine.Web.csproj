@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\DigitalMagazine.Application\DigitalMagazine.Application.csproj" />
+    <ProjectReference Include="..\DigitalMagazine.Infrastructure\DigitalMagazine.Infrastructure.csproj" />
+    <ProjectReference Include="..\DigitalMagazine.CMS\DigitalMagazine.CMS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Piranha" Version="12.0.0" />
+    <PackageReference Include="Piranha.AspNetCore" Version="12.0.0" />
+    <PackageReference Include="Piranha.AspNetCore.Identity.SQLServer" Version="12.0.0" />
+    <PackageReference Include="Piranha.AttributeBuilder" Version="12.0.0" />
+    <PackageReference Include="Piranha.Data.EF.SQLServer" Version="12.0.0" />
+    <PackageReference Include="Piranha.ImageSharp" Version="12.0.0" />
+    <PackageReference Include="Piranha.Local.FileStorage" Version="12.0.0" />
+    <PackageReference Include="Piranha.Manager" Version="12.0.0" />
+    <PackageReference Include="Piranha.Manager.TinyMCE" Version="12.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
