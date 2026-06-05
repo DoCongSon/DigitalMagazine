@@ -64,9 +64,9 @@ _(Dành cho hệ thống tạp chí quy mô vừa - 10,000 đến 50,000 lượt
 3. **Chạy ứng dụng:**
    Nhấn F5 trong IDE hoặc mở Terminal tại thư mục `src/DigitalMagazine.Web` gõ lệnh:
    ```bash
-   dotnet run --seed
+   dotnet run
    ```
-   _Lệnh này sẽ tự động Migrate cơ sở dữ liệu và tạo tài khoản Admin mặc định._
+   *Hệ thống đã được lập trình để tự động kiểm tra, Migrate cơ sở dữ liệu và khởi tạo dữ liệu mẫu mỗi khi chạy.*
 
 ### Môi trường Server Thực Tế (Production - Windows/IIS)
 
